@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
 MAX_NO=0
 
 echo -n "Enter Number between (5 to 9) : "
