@@ -92,7 +92,15 @@ getSelectedField () {(
 )} 
 
 main () {(
-    valuesInField="         "
+    f1=""
+    f2=""
+    f3=""
+    f4=""
+    f5=""
+    f6=""
+    f7=""
+    f8=""
+    f9=""
 
     keepPlaying=true
     turnIsFor="X"
@@ -100,66 +108,24 @@ main () {(
     newField=$(replaceInPlayfield "${playfield}" 9 "X")
     selectedField=1
     animationFrame=1 
-    # animatedField="${newField}"
+    animatedField="${newField}"
     inputKey=" "
-
-    markfield=0
     while $keepPlaying; do
-        echo 123
         animatedField="${newField}"
-
+        # read inputKey
         read -t 0.5 -N 1 inputKey
-        
         selectedField=$(getSelectedField "${selectedField}" "${inputKey}") 
-        selectedFieldValue="${valuesInField:selectedField:1}"
-
-        echo $selectedField
-        echo 123${selectedFieldValue}123
-
-        if [ "${inputKey}" == " " ]; then
-            if [ "${selectedFieldValue}" == " " ]; then 
-                valuesInField=replaceByInStringAtIndex "${valuesInField}" "${selectedField}" "X" 
-            fi
-        fi
-        # j=1
-        # while [ $j -le 10 ]; do
-        #     valueAtIndex="${valuesInField:${j}:1}"
-        #     newField=$(replaceInPlayfield "${playfield}" "${j}" "${valueAtIndex}")
-        # done
+        if [ ${animationFrame} == 1 ]; then 
+            animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" ".")
+            animationFrame=2
         
-        if [ "${selectedFieldValue}" == " " ]; then 
-            if [ ${animationFrame} == 1 ]; then 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" ".")
-                animationFrame=2
-            
-            else 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" ",")
-                animationFrame=1
-            fi
-        elif [ "${selectedFieldValue}" == "X" ]; then
-            if [ ${animationFrame} == 1 ]; then 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "X")
-                animationFrame=2
-            
-            else 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "x")
-                animationFrame=1
-            fi
-        elif [ "${selectedFieldValue}" == "O" ]; then
-            if [ ${animationFrame} == 1 ]; then 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "O")
-                animationFrame=2
-            
-            else 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "o")
-                animationFrame=1
-            fi
+        else 
+            animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" ",")
+            animationFrame=1
         fi
-
-        # clear
-        # echo "$turnText"
-        # echo "$animatedField"
-        
+        clear
+        echo "$turnText"
+        echo "$animatedField"
     done
 )}
 
