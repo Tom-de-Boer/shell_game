@@ -24,7 +24,15 @@ replaceByInStringAtIndex () {(
     indx="$2"
     replaceBy="$3"
 
-    result=$(echo "$1" | sed -z s/./$replaceBy/$indx)
+    result=$(echo "${str}" | sed -z s/./$replaceBy/$indx)
+    echo "$result"
+)}
+
+getCharAtIndex () {(
+    strng="$1"
+    indx="$2"
+    indxMinusOne=$(( indx - 1 ))
+    result="${strng:indxMinusOne:1}"
     echo "$result"
 )}
 
@@ -67,7 +75,7 @@ getSelectedField () {(
     oldSelectedField="$1"
     inputKey="$2"
     selectedField="$oldSelectedField"
-    if [ "$inputKey" == "a" ]; then
+    if [ "$inputKey" == "a" ] || [ "$inputKey" == "4" ]; then
             newSelectedField=$(( oldSelectedField - 1 ))
             if [ "$newSelectedField" -gt "0" ]; then
                 selectedField="$newSelectedField"
@@ -91,79 +99,133 @@ getSelectedField () {(
         echo "$selectedField"
 )} 
 
+didwin () {(
+    fields="$1"
+    player="$2"
+
+    if 
+        [ "$( getCharAtIndex "$fields" 1 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 2 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 3 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 4 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 6 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 7 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 8 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 9 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 1 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 4 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 7 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 2 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 8 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 3 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 6 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 9 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 1 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 9 )" == "${player}" ]; then
+        echo 1234
+    fi
+    if 
+        [ "$( getCharAtIndex "$fields" 3 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
+        [ "$( getCharAtIndex "$fields" 7 )" == "${player}" ]; then
+        echo 1234
+    fi
+)}
+
 main () {(
     valuesInField="         "
-
     keepPlaying=true
     turnIsFor="X"
-    turnText=$(getTurnText "${turnIsFor}")
-    newField=$(replaceInPlayfield "${playfield}" 9 "X")
     selectedField=1
     animationFrame=1 
-    # animatedField="${newField}"
     inputKey=" "
-
-    markfield=0
     while $keepPlaying; do
-        echo 123
-        animatedField="${newField}"
-
-        read -t 0.5 -N 1 inputKey
         
-        selectedField=$(getSelectedField "${selectedField}" "${inputKey}") 
-        selectedFieldValue="${valuesInField:selectedField:1}"
+        animatedField="${playfield}"
 
-        echo $selectedField
-        echo 123${selectedFieldValue}123
+        read -rt 1 -N 1 inputKey
 
-        if [ "${inputKey}" == " " ]; then
-            if [ "${selectedFieldValue}" == " " ]; then 
-                valuesInField=replaceByInStringAtIndex "${valuesInField}" "${selectedField}" "X" 
+        selectedFieldValue=$(getCharAtIndex "${valuesInField}" "${selectedField}")
+        
+        if [ "${inputKey}" == " " ] && [ "${selectedFieldValue}" == " " ]; then
+            if [ "${turnIsFor}" == "X" ]; then
+                valuesInField=$(replaceByInStringAtIndex "${valuesInField}" "${selectedField}" "X")
+                turnIsFor="O"
+            else
+                valuesInField=$(replaceByInStringAtIndex "${valuesInField}" "${selectedField}" "O")
+                turnIsFor="X"
             fi
         fi
-        # j=1
-        # while [ $j -le 10 ]; do
-        #     valueAtIndex="${valuesInField:${j}:1}"
-        #     newField=$(replaceInPlayfield "${playfield}" "${j}" "${valueAtIndex}")
-        # done
+        turnText=$(getTurnText "${turnIsFor}")
+
+        selectedField=$(getSelectedField "${selectedField}" "${inputKey}") 
+
+        j=0
+        while [ $j -lt 9 ]; do
+            valueAtIndex="${valuesInField:${j}:1}"
+            if [ "${valueAtIndex}" != " " ]; then
+                animatedField=$(replaceInPlayfield "${animatedField}" "$(( j + 1 ))" "${valueAtIndex}")
+            fi
+            j=$(( j + 1 ))
+        done
+        selectedFieldValue=$(getCharAtIndex "${valuesInField}" "${selectedField}")
         
         if [ "${selectedFieldValue}" == " " ]; then 
             if [ ${animationFrame} == 1 ]; then 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" ".")
+                animatedField=$(replaceInPlayfield "${animatedField}" "${selectedField}" ".")
                 animationFrame=2
             
             else 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" ",")
+                animatedField=$(replaceInPlayfield "${animatedField}" "${selectedField}" ",")
                 animationFrame=1
             fi
         elif [ "${selectedFieldValue}" == "X" ]; then
             if [ ${animationFrame} == 1 ]; then 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "X")
+                animatedField=$(replaceInPlayfield "${animatedField}" "${selectedField}" "X")
                 animationFrame=2
             
             else 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "x")
+                animatedField=$(replaceInPlayfield "${animatedField}" "${selectedField}" "x")
                 animationFrame=1
             fi
         elif [ "${selectedFieldValue}" == "O" ]; then
             if [ ${animationFrame} == 1 ]; then 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "O")
+                animatedField=$(replaceInPlayfield "${animatedField}" "${selectedField}" "O")
                 animationFrame=2
             
             else 
-                animatedField=$(replaceInPlayfield "${newField}" "${selectedField}" "o")
+                animatedField=$(replaceInPlayfield "${animatedField}" "${selectedField}" "o")
                 animationFrame=1
             fi
         fi
 
-        # clear
-        # echo "$turnText"
-        # echo "$animatedField"
+        clear
+        echo "$turnText"
+        echo "$animatedField"
+        didwin "$valuesInField" "X"
         
     done
 )}
 
 main
-
-
-
