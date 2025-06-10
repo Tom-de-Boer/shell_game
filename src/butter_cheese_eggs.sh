@@ -59,7 +59,8 @@ DELIMITER
 cheesePlaysTurnText="X Cheese is playing"
 eggsPlaysTurnText="O eggs is playing O"
 cheeseWonText="X Cheese won! X"
-eggsWonText="O Eggs won! O"  
+eggsWonText="O Eggs won! O"
+drawText="Nobody won, a draw"  
 
 getTurnText () {(
     XorO="$1"
@@ -152,6 +153,23 @@ didwin () {(
     fi
 )}
 
+isDraw() {(
+    fields="$1"
+
+    if 
+        [ "$( getCharAtIndex "$fields" 1 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 2 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 3 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 4 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 5 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 6 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 7 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 8 )" != " " ] &&
+        [ "$( getCharAtIndex "$fields" 9 )" != " " ]; then
+        echo true
+    fi
+)}
+
 main () {(
     valuesInField="         "
     keepPlaying=true
@@ -231,6 +249,10 @@ main () {(
         if [ "$(didwin "$valuesInField" "O")" ]; then
             keepPlaying=false
             echo "${eggsWonText}"
+        fi
+        if [ "$(isDraw "$valuesInField")" ]; then
+            keepPlaying=false
+            echo "${drawText}"
         fi
         
     done
