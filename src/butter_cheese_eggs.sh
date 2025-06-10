@@ -49,18 +49,17 @@ DELIMITER
 )
 
 explainationText=$(cat <<DELIMITER
+Butter cheese and eggs.
 The field that is animated is the selected field.
 Use space bar to write to selected field.
 Use a s d w to move the selected field.
-
-If the field
 DELIMITER
 )
 
 cheesePlaysTurnText="X Cheese is playing"
 eggsPlaysTurnText="O eggs is playing O"
-cheeseWonText="X Cheese won! X \n Press space bar for new game"
-eggsWonText="O Eggs won! O \n Press space bar for new game"  
+cheeseWonText="X Cheese won! X"
+eggsWonText="O Eggs won! O"  
 
 getTurnText () {(
     XorO="$1"
@@ -107,49 +106,49 @@ didwin () {(
         [ "$( getCharAtIndex "$fields" 1 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 2 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 3 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 4 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 6 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 7 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 8 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 9 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 1 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 4 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 7 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 2 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 8 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 3 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 6 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 9 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 1 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 9 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
     if 
         [ "$( getCharAtIndex "$fields" 3 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 5 )" == "${player}" ] &&
         [ "$( getCharAtIndex "$fields" 7 )" == "${player}" ]; then
-        echo 1234
+        echo true
     fi
 )}
 
@@ -221,9 +220,18 @@ main () {(
         fi
 
         clear
+        echo "$explainationText"
         echo "$turnText"
         echo "$animatedField"
-        didwin "$valuesInField" "X"
+        
+        if [ "$(didwin "$valuesInField" "X")" ]; then
+            keepPlaying=false
+            echo "${cheeseWonText}"
+        fi
+        if [ "$(didwin "$valuesInField" "O")" ]; then
+            keepPlaying=false
+            echo "${eggsWonText}"
+        fi
         
     done
 )}
